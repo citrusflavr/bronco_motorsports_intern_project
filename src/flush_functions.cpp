@@ -1,8 +1,4 @@
-#include <Arduino.h>
-#include <stdint.h>
-#include "../.pio/libdeps/teensy41/Adafruit GFX Library/Adafruit_GFX.h"
-#include "../.pio/libdeps/teensy41/Adafruit ST7735 and ST7789 Library/Adafruit_ST7789.h"
-#include "../include/main.h"
+#include "../include/config.h"
 
 String formatted_brake_bias(float front_brake_bias)
 {
