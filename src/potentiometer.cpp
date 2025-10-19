@@ -3,8 +3,8 @@
 // Linearly maps potentiometer movement to
 // motor movement 
 
-// ADC 4095 = Most Left
-// ADC 0    = Most Right
+// ADC 0    = Most Left
+// ADC 4095 = Most Right
 long potentiometer_raw_to_motor_count(
     int   raw_adc,
     int   adc_max,
@@ -24,7 +24,7 @@ long potentiometer_raw_to_motor_count(
         potentiometer_moved_percent = 1.0f;
 
    // linear interpolation
-   motor_counts = (long)(motor_endpoint_right + (motor_endpoint_left - motor_endpoint_right) * potentiometer_moved_percent);
+   motor_counts = (long)(motor_endpoint_left + (motor_endpoint_right - motor_endpoint_left) * potentiometer_moved_percent);
    
    return motor_counts;
 }
