@@ -1,8 +1,11 @@
 #include "../include/config.h"
+#include "flush_functions.h"
+#include "motor_functions.h"
+#include "potentiometer.h"
 
 
 // Motor Config and Initialization
-Stepper motor(                                          // This is hot ass. This code is hot ass.
+TS4::Stepper motor(                                          // This is hot ass. This code is hot ass.
   __STEP, 
   __DIRECTION
 );
@@ -11,8 +14,6 @@ Encoder encoder(
   __ENCODER_CHANNEL_A,
   __ENCODER_CHANNEL_B
 );
-
-StepControl motor_controller;
 
 
 const long  STEPS_PER_REVOLUTION = motor_init(
@@ -42,6 +43,7 @@ void setup()
 {
   // put your setup code here, to run once:
   Serial.begin(__BAUD_RATE);
+  TS4::begin();
 
   // tune. assuming 1:1 gear ratio, 1/32 step resolution, 24V driver supply, 1.0 A limit
   motor.setMaxSpeed     (80000);  // ~750 RPM @ 1/32 step resolution
@@ -85,9 +87,7 @@ void loop()
   );
 
 
-  motor.setTargetAbs(target_steps);
-
-  motor_controller.move(motor);
+  motor.moveAbsAsync(target_steps);
 
   motor_position_percentage = get_motor_position_percentage(
     motor_left_endpoint,

@@ -1,5 +1,8 @@
 #include "../include/motor_functions.h"
 
+#include <Arduino.h>
+#include "types.h"
+
 long motor_init(
     const int ENABLE,
     const int MODE0,

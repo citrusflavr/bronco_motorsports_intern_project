@@ -1,6 +1,5 @@
 #pragma once
 
-#include "config.h"
 
 long motor_init(
     const int ENABLE,

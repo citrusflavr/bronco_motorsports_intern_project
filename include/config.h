@@ -6,39 +6,13 @@
 #include <stdint.h>
 
 
-#include "flush_functions.h"
-#include "motor_functions.h"
-#include "potentiometer.h"
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7789.h>
+#include "../lib/TeensyStep4-main/src/teensystep4.h"
+#include <Adafruit_FRAM_I2C.h>
 
 
-#include "../.pio/libdeps/teensy41/Adafruit GFX Library/Adafruit_GFX.h"
-#include "../.pio/libdeps/teensy41/Adafruit ST7735 and ST7789 Library/Adafruit_ST7789.h"
-#include "../.pio/libdeps/teensy41/TeensyStep/src/TeensyStep.h"
-
-
-typedef struct display_coordinates
-{
-    int16_t x;
-    int16_t y;
-} DISPLAY_COORDINATES;
-
-
-typedef struct motor_count
-{
-    int16_t most_count_left;
-    int16_t most_count_right;
-} MOTOR_COUNT_ENDPOINTS;
-
-
-enum STEP_RESOLUTION
-{
-    FULL,
-    HALF, 
-    QUARTER,
-    EIGHTH,
-    SIXTEENTH,
-    THIRTYSECOND
-};
+#include "types.h" 
 
 
 // MCU Config
