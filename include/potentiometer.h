@@ -1,7 +1,7 @@
 #pragma once
 
 
-long potentiometer_raw_to_motor_count(
+long potentiometer_raw_to_mechanical_motor_count(
     int   raw_adc,
     int   adc_max,
     float motor_endpoint_left,

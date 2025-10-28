@@ -13,13 +13,13 @@ TS4::Stepper motor(
 
 // Random Global Declarations
 EncoderTool::Encoder  encoder;
-MOTOR_COUNT_ENDPOINTS mechanical_motor_endpoints;
-MOTOR_COUNT_ENDPOINTS controller_motor_endpoints;
+MOTOR_COUNT_ENDPOINTS mechanical_motor_endpoints; // Based off of encoder count
+MOTOR_COUNT_ENDPOINTS controller_motor_endpoints; // Based off of controller pulses
 Adafruit_FRAM_I2C     fram;
 
 long    STEPS_PER_REVOLUTION;
-long    last_potentiometer_reading_count;
-long    potentiometer_reading_count;
+long    potentiometer_mechanical_count;
+long    last_potentiometer_mechanical_count;
 uint8_t fram_buffer       [4];
 uint8_t fram_magic_buffer [2];
 
@@ -117,7 +117,7 @@ void setup()
   }
   else
   {
-    Serial.println("FRAM read failed for left motor endpoint. Non-critical error. Proceeding.");
+    Serial.println("FRAM read failed for left mechanical motor endpoint. Non-critical error. Proceeding.");
     mechanical_motor_endpoints.most_count_left = 0.0f;
   }
 
@@ -131,13 +131,13 @@ void setup()
   }
   else
   {
-    Serial.println("FRAM read failed for right motor endpoint. Non-critical error. Proceeding.");
+    Serial.println("FRAM read failed for right mechanical motor endpoint. Non-critical error. Proceeding.");
     mechanical_motor_endpoints.most_count_right = 0.0f; 
   }
 
 
   // Calibrate motor endpoints, and then write to FRAM to save.
-  if (!calibrate_motor_endpoints(
+  if (!calibrate_mechanical_motor_endpoints(
     &motor,
     &encoder,
     &mechanical_motor_endpoints
@@ -191,8 +191,8 @@ void setup()
 
 
   // Ugh
-  potentiometer_reading_count      = 0.0f;
-  last_potentiometer_reading_count = 0.0f;
+  potentiometer_mechanical_count      = 0.0f;
+  last_potentiometer_mechanical_count = 0.0f;
 }
 
 
@@ -203,17 +203,17 @@ void loop()
   String brake_bias_bar_pos_string;
 
 
-  potentiometer_reading_count = potentiometer_raw_to_motor_count(
+  potentiometer_mechanical_count = potentiometer_raw_to_mechanical_motor_count(
     analogRead(__POTENTIOMETER_PIN),
     ADC_MAX_VALUE,                                
     mechanical_motor_endpoints.most_count_left,
     mechanical_motor_endpoints.most_count_right 
   );
 
-  if (!(abs(potentiometer_reading_count - last_potentiometer_reading_count) < 20))
+  if (!(abs(potentiometer_mechanical_count - last_potentiometer_mechanical_count) < 20))
   {
     target_pulses = lround(
-      (double) potentiometer_reading_count * (double) __PULSES_PER_ENCODER_COUNT
+      (double) potentiometer_mechanical_count * (double) __PULSES_PER_ENCODER_COUNT
     );
 
     if (target_pulses < controller_motor_endpoints.most_count_left)
@@ -242,7 +242,7 @@ void loop()
       brake_bias_bar_pos_string
     );
 
-    last_potentiometer_reading_count = potentiometer_reading_count;
+    last_potentiometer_mechanical_count = potentiometer_mechanical_count;
   }
 }
 

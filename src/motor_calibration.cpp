@@ -2,10 +2,10 @@
 #include "../include/motor_functions.h"
 
 
-boolean calibrate_motor_endpoints(
-    TS4::Stepper* motor,
-    EncoderTool::Encoder* encoder,
-    MOTOR_COUNT_ENDPOINTS* motor_endpoints
+boolean calibrate_mechanical_motor_endpoints(
+    TS4::Stepper         * motor,
+    EncoderTool::Encoder * encoder,
+    MOTOR_COUNT_ENDPOINTS* mechanical_motor_endpoints
 )
 {
     int iteration_limit = 100000;
@@ -20,8 +20,9 @@ boolean calibrate_motor_endpoints(
         if (digitalRead(__STL_REP) == HIGH)
         {
             motor->moveRelAsync(25);
-            motor_endpoints->most_count_left = encoder->getValue();
-
+            mechanical_motor_endpoints->most_count_left = encoder->getValue();
+            
+            // Mark 0 as most left for both mechanical endpoint (encoder count) and software endpoint (software pulses)
             encoder->setValue    (0);
             motor  ->setPosition (0);
             break;
@@ -39,7 +40,7 @@ boolean calibrate_motor_endpoints(
         if (digitalRead(__STL_REP) == HIGH)
         {
             motor->moveRelAsync(-25);
-            motor_endpoints->most_count_right = encoder->getValue();
+            mechanical_motor_endpoints->most_count_right = encoder->getValue();
             break;
         }
 
