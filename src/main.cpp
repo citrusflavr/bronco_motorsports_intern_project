@@ -13,7 +13,8 @@ TS4::Stepper motor(
 
 // Random Global Declarations
 EncoderTool::Encoder  encoder;
-MOTOR_COUNT_ENDPOINTS motor_endpoints;
+MOTOR_COUNT_ENDPOINTS mechanical_motor_endpoints;
+MOTOR_COUNT_ENDPOINTS controller_motor_endpoints;
 Adafruit_FRAM_I2C     fram;
 
 long    STEPS_PER_REVOLUTION;
@@ -109,7 +110,7 @@ void setup()
   if (fram.read(__FRAM_ENDPOINT_LEFT_ADDR, fram_buffer, 4))
   {
     memcpy(
-      &motor_endpoints.most_count_left,
+      &mechanical_motor_endpoints.most_count_left,
       fram_buffer,
       4
     );
@@ -117,13 +118,13 @@ void setup()
   else
   {
     Serial.println("FRAM read failed for left motor endpoint. Non-critical error. Proceeding.");
-    motor_endpoints.most_count_left = 0.0f;
+    mechanical_motor_endpoints.most_count_left = 0.0f;
   }
 
   if (fram.read(__FRAM_ENDPOINT_RIGHT_ADDR, fram_buffer, 4))
   {
     memcpy(
-      &motor_endpoints.most_count_right,
+      &mechanical_motor_endpoints.most_count_right,
       fram_buffer,
       4
     );
@@ -131,7 +132,7 @@ void setup()
   else
   {
     Serial.println("FRAM read failed for right motor endpoint. Non-critical error. Proceeding.");
-    motor_endpoints.most_count_right = 0.0f; 
+    mechanical_motor_endpoints.most_count_right = 0.0f; 
   }
 
 
@@ -139,7 +140,7 @@ void setup()
   if (!calibrate_motor_endpoints(
     &motor,
     &encoder,
-    &motor_endpoints
+    &mechanical_motor_endpoints
   ))
   {
     Serial.print("Calibration Failed. System not safe to use.");
@@ -149,7 +150,7 @@ void setup()
   {
     memcpy(
       fram_buffer,
-      &motor_endpoints.most_count_left,
+      &mechanical_motor_endpoints.most_count_left,
       4
     );
     
@@ -160,7 +161,7 @@ void setup()
 
     memcpy(
       fram_buffer,
-      &motor_endpoints.most_count_right,
+      &mechanical_motor_endpoints.most_count_right,
       4
     );
   
@@ -169,6 +170,12 @@ void setup()
       Serial.println("Failed to write to FRAM most right endpoint ADDR. Non-critical error. Proceeding.");
     }
   }
+
+  // Translate mechanical count endpoints from encoder
+  // to software count endpoints
+  controller_motor_endpoints.most_count_left  = 0;
+  controller_motor_endpoints.most_count_right = mechanical_motor_endpoints.most_count_right * __PULSES_PER_ENCODER_COUNT;
+  
 
   // tune. assuming 1:1 gear ratio, 1/32 step resolution, 24V driver supply, 1.0 A limit
   set_motor_driver_VREF_via_percentage(__VREF, 100.0f);
@@ -191,7 +198,7 @@ void setup()
 
 void loop() 
 {
-  long   target_steps; 
+  long   target_pulses; 
   float  motor_position_percentage;
   String brake_bias_bar_pos_string;
 
@@ -199,31 +206,28 @@ void loop()
   potentiometer_reading_count = potentiometer_raw_to_motor_count(
     analogRead(__POTENTIOMETER_PIN),
     ADC_MAX_VALUE,                                
-    motor_endpoints.most_count_left,
-    motor_endpoints.most_count_right 
+    mechanical_motor_endpoints.most_count_left,
+    mechanical_motor_endpoints.most_count_right 
   );
 
   if (!(abs(potentiometer_reading_count - last_potentiometer_reading_count) < 20))
   {
-    target_steps = lround(
-      (double) potentiometer_reading_count * 
-      ((double) __MOTOR_STEPS_PER_REV * (double) __STEP_RESOLUTION * (double) __GEAR_RATIO) /
-      (double) __ENCODER_COUNTS_PER_REV
+    target_pulses = lround(
+      (double) potentiometer_reading_count * (double) __PULSES_PER_ENCODER_COUNT
     );
 
+    if (target_pulses < controller_motor_endpoints.most_count_left)
+      target_pulses = controller_motor_endpoints.most_count_left;
+    else if (target_pulses > controller_motor_endpoints.most_count_right)
+      target_pulses = controller_motor_endpoints.most_count_right;
 
-    if (target_steps < motor_endpoints.most_count_left)
-      target_steps = motor_endpoints.most_count_left;
-    else if (target_steps < motor_endpoints.most_count_right)
-      target_steps = motor_endpoints.most_count_right;
 
-
-    motor.moveAbsAsync(target_steps);
+    motor.moveAbsAsync(target_pulses);
 
 
     motor_position_percentage = get_motor_position_percentage(
-      motor_endpoints.most_count_left,
-      motor_endpoints.most_count_right,
+      mechanical_motor_endpoints.most_count_left,
+      mechanical_motor_endpoints.most_count_right,
       encoder.getValue()
     );
 

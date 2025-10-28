@@ -21,6 +21,9 @@ boolean calibrate_motor_endpoints(
         {
             motor->moveRelAsync(25);
             motor_endpoints->most_count_left = encoder->getValue();
+
+            encoder->setValue    (0);
+            motor  ->setPosition (0);
             break;
         }
 
