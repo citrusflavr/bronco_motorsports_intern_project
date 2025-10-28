@@ -15,7 +15,7 @@
 - adafruit fram
 
 # things todo
-
+- certain things uses controller (software) count, while others use encoder (mechanical) count. naming scheme not clear. improve naming.
 
 - refactor fram related code to another file
 - make potentiometer's adc to count function wiring agonistic (wtf does this mean? 10/28/25)
