@@ -1,21 +1,23 @@
 # bronco_motorsports_intern_project
 
+# current implemented features (not tested)
+- read from adafruit FRAM for motor count endpoints
+- write to adafruit FRAM for motor count endpoints
+- software calibration of motor count endpoints
+- potentiometer controls motor
+- displays mechanical position of brake bias bar on a little adafruit SPI screen
+- compiles!
+
+# dependencies
+- teensy4.1 for TeensyStep4
+- teensy4.1 for EncoderTool
+- adafruit ST78xx display
+- adafruit fram
 
 # things todo
 
-- software calibration of motor endpoints
-- make sure to clamp target_count to endpoints to prevent movement past brake bias bar's "safe zone"
 
-- add jitter protection for potentiometer
-- refactor ugly poop code
-- make potentiometer's adc to count function wiring agonistic
-- find a way to make program step resolution and analog read resolution agonistic
-
-
-- implement write to SD for persistent storage of important data (like motor endpoints)
-- implement read from SD to restore previous values
-
-- assuming software calibration implementation is done, implement a pseudo way of triggering calibration upon button press
-- implement a screen UI for that too
+- refactor fram related code to another file
+- make potentiometer's adc to count function wiring agonistic (wtf does this mean? 10/28/25)
 
 - most important: review for logic bugs

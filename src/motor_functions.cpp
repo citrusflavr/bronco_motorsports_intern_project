@@ -1,39 +1,32 @@
 #include "../include/motor_functions.h"
+#include "../include/config.h"
 
 #include <Arduino.h>
 #include "types.h"
 
-long motor_init(
-    const int ENABLE,
-    const int MODE0,
-    const int MODE1,
-    const int MODE2,
-    const int total_steps_per_full_rev,
-    const int resolution 
+
+long DRV8434ARGER_set_steps_per_revolution(
+    const int   MODE0,
+    const int   MODE1,
+    const int   total_steps_per_full_rev,
+    const float resolution 
 )
 {
-    pinMode(ENABLE, OUTPUT);
     pinMode(MODE0,  OUTPUT);
     pinMode(MODE1,  OUTPUT);
-    pinMode(MODE2,  OUTPUT);
-
-    // Start the motor
-    digitalWrite(ENABLE, LOW);
 
 
     if (resolution == FULL)
     {
         digitalWrite(MODE0, LOW);
         digitalWrite(MODE1, LOW);
-        digitalWrite(MODE2, LOW);
 
         return (long)total_steps_per_full_rev * 1.0f;
     }
     else if (resolution == HALF)
     {
-        digitalWrite(MODE0, HIGH);
-        digitalWrite(MODE1, LOW);
-        digitalWrite(MODE2, LOW);
+        pinMode      (MODE0, INPUT);
+        digitalWrite (MODE1, LOW);
 
         return (long)total_steps_per_full_rev * 2.0f;
     }
@@ -41,7 +34,6 @@ long motor_init(
     {
         digitalWrite(MODE0, LOW);
         digitalWrite(MODE1, HIGH);
-        digitalWrite(MODE2, LOW);
 
         return (long)total_steps_per_full_rev * 4.0f;
     }
@@ -49,15 +41,13 @@ long motor_init(
     {
         digitalWrite(MODE0, HIGH);
         digitalWrite(MODE1, HIGH);
-        digitalWrite(MODE2, LOW);
 
         return (long)total_steps_per_full_rev * 8.0f;
     }
     else if (resolution == THIRTYSECOND)
     {
-        digitalWrite(MODE0, HIGH);
-        digitalWrite(MODE1, HIGH);
-        digitalWrite(MODE2, HIGH);
+        digitalWrite (MODE0, LOW);
+        pinMode      (MODE1, INPUT);
 
         return (long)total_steps_per_full_rev * 32.0f;
     }
@@ -65,7 +55,6 @@ long motor_init(
     {
         digitalWrite(MODE0, LOW);
         digitalWrite(MODE1, LOW);
-        digitalWrite(MODE2, LOW);
 
         return (long)total_steps_per_full_rev * 1.0f;
     }
@@ -101,3 +90,16 @@ float get_motor_position_percentage(
 
     return brake_bias_bar_percent;
 }
+
+
+void set_motor_driver_VREF_via_percentage(int PWM_pin, float percentage)
+{
+    set_pwm_duty_cycle(PWM_pin, percentage);
+}
+
+
+void set_driver_motor_stall_sensitivity_percentage(int TRQ_CNT_PWM_pin, float percentage) 
+{
+    set_pwm_duty_cycle(TRQ_CNT_PWM_pin, percentage);
+}
+

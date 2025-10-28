@@ -117,3 +117,4 @@ void flush_string_to_auto_centered_coords(
 
     display->print(input_string);
 }
+

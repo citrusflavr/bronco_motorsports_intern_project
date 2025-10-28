@@ -26,3 +26,10 @@ DISPLAY_COORDINATES compute_centered_coordinates(
 
 String formatted_brake_bias         (float front_brake_bias);
 String formatted_brake_bar_position (float brake_bar_position);
+
+inline void enable_display_backlight(int TFT_LIT)
+{
+    pinMode(TFT_LIT, OUTPUT);
+
+    digitalWrite(TFT_LIT, HIGH);
+}

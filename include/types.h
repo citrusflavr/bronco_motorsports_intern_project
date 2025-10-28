@@ -11,18 +11,16 @@ typedef struct display_coordinates
 
 typedef struct motor_count
 {
-    int16_t most_count_left;
-    int16_t most_count_right;
+    float most_count_left;
+    float most_count_right;
 } MOTOR_COUNT_ENDPOINTS;
 
 
-enum STEP_RESOLUTION
-{
-    FULL,
-    HALF, 
-    QUARTER,
-    EIGHTH,
-    SIXTEENTH,
-    THIRTYSECOND
-};
+constexpr float FULL         = 1.0f;
+constexpr float HALF         = 0.5f;
+constexpr float QUARTER      = 0.25f;
+constexpr float EIGHTH       = 0.125f;
+constexpr float SIXTEENTH    = 0.0625f;
+constexpr float THIRTYSECOND = 0.03125f;
+
 
