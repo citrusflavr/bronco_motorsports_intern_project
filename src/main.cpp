@@ -48,7 +48,7 @@ void setup()
 
   // Begin EncoderTool
   encoder.begin(
-    __ENCODER_CHANNEL_B,
+    __ENCODER_CHANNEL_A,
     __ENCODER_CHANNEL_B
   );
 
